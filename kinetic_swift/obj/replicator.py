@@ -34,6 +34,8 @@ from kinetic_swift.utils import get_internal_client, key_range_markers
 from kinetic_swift.obj.server import (object_key, diskfile,
                                       install_kinetic_diskfile, temp_key)
 
+from kinetic_swift.utils import get_device_host_and_port
+
 
 CLENAUP_ABORT_UPLOAD_SECONDS = 28800
 
@@ -233,7 +235,7 @@ class KineticReplicator(ObjectReplicator):
             conn.close()
 
     def _get_conn(self, device):
-        host, port = device.split(':')
+        host, port = get_device_host_and_port(device)
         conn = KineticSwiftClient(
             self.logger, host, int(port),
             connect_timeout=self.connect_timeout,

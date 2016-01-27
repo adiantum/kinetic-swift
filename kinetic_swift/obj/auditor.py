@@ -28,6 +28,8 @@ from swift import gettext_ as _
 from swift.obj.diskfile import DiskFileNotExist, DiskFileDeviceUnavailable
 from kinetic_swift.obj.server import DiskFileManager
 
+from kinetic_swift.utils import get_device_host_and_port
+
 
 class KineticAuditor(ObjectAuditor):
 
@@ -76,7 +78,7 @@ class KineticAuditor(ObjectAuditor):
         ])
 
     def _find_objects(self, device):
-        conn = self.mgr.get_connection(*device.split(':'))
+        conn = self.mgr.get_connection(*get_device_host_and_port(device))
         start_key = 'objects'
         end_key = 'objects/'
         for head_key in conn.iterKeyRange(start_key, end_key):

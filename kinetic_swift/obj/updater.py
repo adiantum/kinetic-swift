@@ -31,6 +31,8 @@ from swift import gettext_ as _
 
 from kinetic_swift.obj.server import DiskFileManager
 
+from kinetic_swift.utils import get_device_host_and_port
+
 
 class KineticUpdater(ObjectUpdater):
 
@@ -81,7 +83,7 @@ class KineticUpdater(ObjectUpdater):
                 self.stats['device.failures'] += 1
 
     def _find_updates_entries(self, device):
-        conn = self.mgr.get_connection(*device.split(':'))
+        conn = self.mgr.get_connection(*get_device_host_and_port(device))
         start_key = 'async_pending'
         end_key = 'async_pending/'
         for async_key in conn.iterKeyRange(start_key, end_key):
@@ -99,19 +101,19 @@ class KineticUpdater(ObjectUpdater):
 
     def _load_update(self, device, async_key):
         # load update
-        conn = self.mgr.get_connection(*device.split(':'))
+        conn = self.mgr.get_connection(*get_device_host_and_port(device))
         resp = conn.get(async_key)
         entry = resp.wait()
         update = msgpack.unpackb(entry.value)
         return update
 
     def _unlink_update(self, device, async_key):
-        conn = self.mgr.get_connection(*device.split(':'))
+        conn = self.mgr.get_connection(*get_device_host_and_port(device))
         conn.delete(async_key).wait()
         return True
 
     def _save_update(self, device, async_key, update):
-        conn = self.mgr.get_connection(*device.split(':'))
+        conn = self.mgr.get_connection(*get_device_host_and_port(device))
         blob = msgpack.packb(update)
         conn.put(async_key, blob).wait()
         return True

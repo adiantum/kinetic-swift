@@ -29,6 +29,8 @@ from kinetic_swift.client import KineticSwiftClient
 
 from kinetic.common import Synchronization
 
+from kinetic_swift.utils import get_device_host_and_port
+
 
 DEFAULT_DEPTH = 2
 
@@ -375,14 +377,14 @@ class DiskFileManager(diskfile.DiskFileManager):
 
     def get_diskfile(self, device, partition, account, container, obj, policy,
                      **kwargs):
-        host, port = device.split(':')
+        host, port = get_device_host_and_port(device)
         return DiskFile(self, host, port, self.threadpools[device],
                         partition, account, container, obj, policy=policy,
                         unlink_wait=self.unlink_wait,
                         **kwargs)
 
     def get_diskfile_from_audit_location(self, device, head_key):
-        host, port = device.split(':')
+        host, port = get_device_host_and_port(device)
         policy_match = re.match('objects([-]?[0-9]?)\.', head_key)
         policy_string = policy_match.group(1)
 
@@ -397,7 +399,7 @@ class DiskFileManager(diskfile.DiskFileManager):
 
     def pickle_async_update(self, device, account, container, obj, data,
                             timestamp, policy_idx):
-        host, port = device.split(':')
+        host, port = get_device_host_and_port(device)
         hashpath = diskfile.hash_path(account, container, obj)
         key = async_key(policy_idx, hashpath, timestamp)
         blob = msgpack.packb(data)

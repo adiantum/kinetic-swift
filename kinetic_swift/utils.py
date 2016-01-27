@@ -13,6 +13,8 @@
 
 import errno
 
+from random import shuffle
+
 from swift import gettext_ as _
 from swift.container.sync import ic_conf_body
 from swift.common.wsgi import ConfigString
@@ -53,3 +55,17 @@ def key_range_markers(marker):
     :returns: a tuple, (start_key, end_key)
     """
     return tuple(marker + m for m in ('.', '/'))
+
+def get_device_host_and_port(device):
+    """
+    This function can take host and port from Swift ring if we'll
+    add all kinetic disk intefaces (comma separated),
+    as soon as kinatic disk have two 1Gbps intarfaces
+
+    :param device: host:port[,host:port]
+    :return:
+    """
+    interfaces = device.split(",")
+    shuffle(interfaces)
+
+    return interfaces[0].split(":")
